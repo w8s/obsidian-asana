@@ -2,16 +2,22 @@ import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Set
 
 // Remember to rename these classes and interfaces!
 
-interface MyPluginSettings {
-	mySetting: string;
+interface AsanaPluginSettings {
+	asana_pat: string;
+	asana_workspace: string;
+	asana_default_project_gid: string;
+	asana_templates_dir: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+const DEFAULT_SETTINGS: AsanaPluginSettings = {
+	asana_pat: '',
+	asana_workspace: '',
+	asana_default_project_gid: '',
+	asana_templates_dir: '',
 }
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+export default class AsanaPlugin extends Plugin {
+	settings: AsanaPluginSettings;
 
 	async onload() {
 		await this.loadSettings();
@@ -33,7 +39,7 @@ export default class MyPlugin extends Plugin {
 			id: 'open-sample-modal-simple',
 			name: 'Open sample modal (simple)',
 			callback: () => {
-				new SampleModal(this.app).open();
+				new AsanaModal(this.app).open();
 			}
 		});
 		// This adds an editor command that can perform some operation on the current editor instance
@@ -56,7 +62,7 @@ export default class MyPlugin extends Plugin {
 					// If checking is true, we're simply "checking" if the command can be run.
 					// If checking is false, then we want to actually perform the operation.
 					if (!checking) {
-						new SampleModal(this.app).open();
+						new AsanaModal(this.app).open();
 					}
 
 					// This command will only show up in Command Palette when the check function returns true
@@ -66,7 +72,7 @@ export default class MyPlugin extends Plugin {
 		});
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
+		this.addSettingTab(new AsanaSettingTab(this.app, this));
 
 		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
 		// Using this function will automatically remove the event listener when this plugin is disabled.
@@ -91,7 +97,7 @@ export default class MyPlugin extends Plugin {
 	}
 }
 
-class SampleModal extends Modal {
+class AsanaModal extends Modal {
 	constructor(app: App) {
 		super(app);
 	}
@@ -107,10 +113,10 @@ class SampleModal extends Modal {
 	}
 }
 
-class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+class AsanaSettingTab extends PluginSettingTab {
+	plugin: AsanaPlugin;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: AsanaPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -121,13 +127,27 @@ class SampleSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
+			.setName('Asana PAT')
+			.setDesc('Your Asana Personal Access Token (PAT) to access your Asana workspace.')
+			.addButton(btn => btn
+				.setButtonText('Hide PAT')
+				.onClick(e => {
+					console.log("clicked the btn");
+					const btn = (e.target as Element);
+					const patField = (btn.nextElementSibling as Element);
+					if (btn.getText() === "Show PAT") {
+						btn.setText("Hide PAT");
+						patField.setAttr('type', 'text');
+					} else {
+						btn.setText("Show PAT");
+						patField.setAttr('type', 'password');
+					}
+				}))
 			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
+				.setPlaceholder('Enter your PAT')
+				.setValue(this.plugin.settings.asana_pat)
 				.onChange(async (value) => {
-					this.plugin.settings.mySetting = value;
+					this.plugin.settings.asana_pat = value;
 					await this.plugin.saveSettings();
 				}));
 	}
