@@ -1,0 +1,11 @@
+{
+	"id": "obsidian-asana",
+	"name": "Asana",
+	"version": "0.0.1",
+	"minAppVersion": "0.15.0",
+	"description": "Integrate Asana to todos in Obsidian",
+	"author": "Todd Waits",
+	"authorUrl": "https://toddwaits.org",
+	"fundingUrl": "https://obsidian.md/pricing",
+	"isDesktopOnly": false
+}
